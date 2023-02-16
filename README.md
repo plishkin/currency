@@ -1,5 +1,7 @@
 ## Simple sample application that shows currency rate
 
+![scrrenshot](https://raw.githubusercontent.com/plishkin/currency/main/screenshot.png)
+
 ### Uses
 
 - **[Laravel](https://laravel.com/)**
