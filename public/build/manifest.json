@@ -1,0 +1,19 @@
+{
+  "resources/tsx/app.tsx": {
+    "file": "assets/app.d5e4126d.js",
+    "src": "resources/tsx/app.tsx",
+    "isEntry": true,
+    "css": [
+      "assets/app.7b8539e8.css"
+    ]
+  },
+  "resources/tsx/app.css": {
+    "file": "assets/app.7b8539e8.css",
+    "src": "resources/tsx/app.css"
+  },
+  "resources/sass/app.scss": {
+    "file": "assets/app.913fae17.css",
+    "src": "resources/sass/app.scss",
+    "isEntry": true
+  }
+}
