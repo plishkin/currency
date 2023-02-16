@@ -68,3 +68,6 @@ docker-compose exec fpm php artisan currency:update
 bash docker_build.sh
 ```
 
+### Visit in your browser
+
+http://localhost:8082 
