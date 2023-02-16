@@ -1,0 +1,13 @@
+<!DOCTYPE html>
+<html lang="{{ str_replace('_', '-', app()->getLocale()) }}">
+<head>
+    <title>Laravel</title>
+    @vite('resources/tsx/app.tsx')
+    @vite('resources/sass/app.scss')
+</head>
+<body class="antialiased">
+<div class="container">
+    <div id="root"></div>
+</div>
+</body>
+</html>
