@@ -23,12 +23,6 @@ Go to the cloned project folder
 cd currency
 ```
 
-Go to the cloned project folder
-
-```bash
-cd currency
-```
-
 ### Up and running with docker
 
 #### Method 1: run commands manually
@@ -46,13 +40,13 @@ sudo chown -R www-data ./storage ./bootstrap/cache ./public
 Build and run docker
 
 ```bash
-docker-compose build || docker-compose up -d
+docker-compose build && docker-compose up -d
 ```
 
 Run setup commands in container
 
 ```bash
-docker-compose exec fpm composer dump-autoload
+docker-compose exec fpm composer install
 ```
 
 ```bash
@@ -61,6 +55,10 @@ docker-compose exec fpm php artisan optimize:clear
 
 ```bash
 docker-compose exec fpm php artisan migrate
+```
+
+```bash
+docker-compose exec fpm php artisan currency:update
 ```
 
 #### Method 2: run build script 
