@@ -2,6 +2,10 @@
 
 ![scrrenshot](https://raw.githubusercontent.com/plishkin/currency/main/screenshot.png)
 
+### Interaction diagram
+
+![diagram](https://raw.githubusercontent.com/plishkin/currency/main/diagram.svg)
+
 ### Uses
 
 - **[Laravel](https://laravel.com/)**
