@@ -8,4 +8,5 @@ docker-compose build && docker-compose up -d
 docker-compose exec fpm composer install
 docker-compose exec fpm php artisan optimize:clear
 docker-compose exec fpm php artisan migrate
+docker-compose exec fpm service supervisor restart
 docker-compose exec fpm php artisan currency:update
