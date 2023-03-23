@@ -52,8 +52,6 @@ const CurrencyLayoutBlock: React.FunctionComponent<CurrencyBlockProps> = (props:
                 setLastLoaded(Date.now());
             })
             updateFromServer();
-            console.log(window.Pusher);
-            console.log(window.Echo);
         }
     }, []);
 
