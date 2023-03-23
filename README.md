@@ -54,7 +54,7 @@ http://localhost:8082
 #### Backend
 
 ```bash
-docker-compose exec fpm php bin/phpunit 
+docker-compose exec fpm php artisan test
 ```
 
 #### Frontend

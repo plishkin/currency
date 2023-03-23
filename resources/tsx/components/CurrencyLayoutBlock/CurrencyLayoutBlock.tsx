@@ -46,11 +46,13 @@ const CurrencyLayoutBlock: React.FunctionComponent<CurrencyBlockProps> = (props:
 
     useEffect(() => {
         if (!iso4217.length) {
-            window.Echo.connector.listen('currency', 'CurrencyUpdated', (json: CurrencyJson) => {
-                setCurrencies(json.currencies);
-                setLastUpdated(json.lastUpdated);
-                setLastLoaded(Date.now());
-            })
+            if (window.Echo) {
+                window.Echo.connector.listen('currency', 'CurrencyUpdated', (json: CurrencyJson) => {
+                    setCurrencies(json.currencies);
+                    setLastUpdated(json.lastUpdated);
+                    setLastLoaded(Date.now());
+                })
+            }
             updateFromServer();
         }
     }, []);
