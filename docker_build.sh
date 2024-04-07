@@ -3,7 +3,8 @@
 #docker compose down -v
 docker compose stop
 
-docker compose build --no-cache
+#docker compose build --no-cache
+docker compose build
 docker compose up -d
 sleep 7
 docker compose exec laravel.test composer install --optimize-autoloader --ignore-platform-reqs
