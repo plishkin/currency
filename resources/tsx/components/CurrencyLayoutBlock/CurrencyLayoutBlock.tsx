@@ -5,25 +5,28 @@ import CurrenciesBlock from "./CurrenciesBlock/CurrenciesBlock";
 import {ICurrency} from "../../Models/ICurrency";
 import {ICurrencyCode} from "../../Models/ICurrencyCode";
 import axios from "axios";
-import {Simulate} from "react-dom/test-utils";
-import load = Simulate.load;
 
 interface CurrencyBlockProps {
 }
 
-interface CurrencyJson {
+interface ICurrencyJson {
     currencies: ICurrency[],
     iso4217?: [],
     lastUpdated: number,
 }
 
+interface ICurrencyData {
+    iso4217: ICurrencyCode[],
+    currencies: ICurrency[],
+    lastUpdated: number,
+    lastLoaded: number,
+}
+
 const CurrencyLayoutBlock: React.FunctionComponent<CurrencyBlockProps> = (props: CurrencyBlockProps) => {
 
     const [loading, setLoading] = useState<boolean>(false);
-    const [currencies, setCurrencies] = useState<ICurrency[]>([]);
-    const [iso4217, setIso4217] = useState<ICurrencyCode[]>([]);
-    const [lastLoaded, setLastLoaded] = useState<number>(0);
-    const [lastUpdated, setLastUpdated] = useState<number>(0);
+    const [currencyData, setCurrencyData] =
+        useState<ICurrencyData>({currencies: []} as ICurrencyData);
 
     const updateFromServer = () => {
         setLoading(true);
@@ -32,36 +35,36 @@ const CurrencyLayoutBlock: React.FunctionComponent<CurrencyBlockProps> = (props:
                 Accept: "application/json"
             },
         }).then(resp => {
-            const json: CurrencyJson = resp.data;
-            const iso4217: ICurrencyCode[] = json.iso4217.map(elem => {
-                return {
-                    countryName: elem[0],
-                    currencyName: elem[1],
-                    codeName: elem[2],
-                    code: elem[3],
-                    number: elem[4]
-                }
-            })
-            setIso4217(iso4217);
-            setCurrencies(json.currencies);
-            setLastUpdated(json.lastUpdated);
-            setLastLoaded(Date.now());
+            setCurrencyData(mapData(resp.data as ICurrencyJson));
             setLoading(false);
         });
     }
 
     useEffect(() => {
-        if (!iso4217.length) {
-            if (window.Echo) {
-                window.Echo.connector.listen('currency', 'CurrencyUpdated', (json: CurrencyJson) => {
-                    setCurrencies(json.currencies);
-                    setLastUpdated(json.lastUpdated);
-                    setLastLoaded(Date.now());
-                })
-            }
-            updateFromServer();
+        if (window.Echo) {
+            window.Echo.connector.listen(
+                'currency',
+                'CurrencyUpdated',
+                (json: ICurrencyJson) => setCurrencyData(mapData(json))
+            )
         }
+        updateFromServer();
     }, []);
+
+    const mapData = (json: ICurrencyJson) => ({
+        iso4217: json.iso4217.map(elem => {
+            return {
+                countryName: elem[0],
+                currencyName: elem[1],
+                codeName: elem[2],
+                code: elem[3],
+                number: elem[4]
+            }
+        }),
+            lastLoaded: Date.now(),
+            lastUpdated: json.lastUpdated,
+            currencies: json.currencies,
+    } as ICurrencyData);
 
     return (
         <div>
@@ -82,15 +85,16 @@ const CurrencyLayoutBlock: React.FunctionComponent<CurrencyBlockProps> = (props:
                             </p>
                         </div>
                         <div className="col-md-4">
-                            <p><strong>Last loaded at: </strong><br />{(new Date(lastLoaded)).toLocaleString()}</p>
+                            <p><strong>Last loaded at: </strong><br/>{(new Date(currencyData.lastLoaded)).toLocaleString()}</p>
                         </div>
                         <div className="col-md-4">
-                            <p><strong>Last updated from bank at: </strong><br />{(new Date(lastUpdated * 1000)).toLocaleString()}</p>
+                            <p><strong>Last updated from bank
+                                at: </strong><br/>{(new Date(currencyData.lastUpdated * 1000)).toLocaleString()}</p>
                         </div>
                     </div>
 
 
-                    <CurrenciesBlock currencies={currencies} iso4217={iso4217}/>
+                    <CurrenciesBlock currencies={currencyData.currencies} iso4217={currencyData.iso4217}/>
                 </div>
             }
         </div>
