@@ -2,7 +2,7 @@ services:
     laravel:
         container_name: "${COMPOSE_PROJECT_NAME}-laravel"
         build:
-            context: ./docker
+            context: .
             dockerfile: Dockerfile
             args:
                 WWWGROUP: '${WWWGROUP}'
