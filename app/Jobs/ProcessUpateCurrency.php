@@ -2,14 +2,14 @@
 
 namespace App\Jobs;
 
-use App\Connetors\MonobankConnector;
-use App\Events\CurrencyUpdated;
 use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Bus\Dispatchable;
 use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Queue\SerializesModels;
 use Illuminate\Support\Facades\Cache;
+use App\Connetors\MonobankConnector;
+use App\Events\CurrencyUpdated;
 
 class ProcessUpateCurrency implements ShouldQueue
 {
@@ -17,8 +17,6 @@ class ProcessUpateCurrency implements ShouldQueue
 
     /**
      * Create a new job instance.
-     *
-     * @return void
      */
     public function __construct()
     {
@@ -27,10 +25,8 @@ class ProcessUpateCurrency implements ShouldQueue
 
     /**
      * Execute the job.
-     *
-     * @return void
      */
-    public function handle()
+    public function handle(): void
     {
         $currencies = MonobankConnector::getCurrencies();
         if ($currencies) {
@@ -39,5 +35,4 @@ class ProcessUpateCurrency implements ShouldQueue
             CurrencyUpdated::dispatch($currencies, $time);
         }
     }
-
 }

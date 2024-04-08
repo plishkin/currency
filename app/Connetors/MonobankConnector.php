@@ -5,11 +5,11 @@ namespace App\Connetors;
 class MonobankConnector
 {
 
-    private static $url = 'https://api.monobank.ua/bank/currency';
+    private static string $url = 'https://api.monobank.ua/bank/currency';
 
-    public static function getCurrencies()
+    public static function getCurrencies(): bool|array
     {
-        $content = file_get_contents(self::$url);
+        $content = @file_get_contents(self::$url);
         if ($content) {
             $currencies = json_decode($content, true);
             if (is_array($currencies)) {

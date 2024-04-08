@@ -12,23 +12,20 @@ class UpdateCurrency extends Command
      *
      * @var string
      */
-    protected $signature = 'currency:update';
+    protected $signature = 'app:update-currency';
 
     /**
      * The console command description.
      *
      * @var string
      */
-    protected $description = 'Update Currency';
+    protected $description = 'Command description';
 
     /**
      * Execute the console command.
-     *
-     * @return int
      */
     public function handle()
     {
         ProcessUpateCurrency::dispatch();
-        return 0;
     }
 }

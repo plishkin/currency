@@ -1,14 +1,16 @@
 #!/usr/bin/env bash
 
-sudo chmod -R 0777 ./storage ./bootstrap/cache ./public
-sudo chown -R www-data ./storage ./bootstrap/cache ./public
+#docker compose down -v
+docker compose stop
 
-docker-compose build
-docker-compose up -d fpm
-docker-compose exec fpm composer install --optimize-autoloader
-docker-compose exec fpm php artisan optimize:clear
-docker-compose exec fpm php artisan migrate
-
-docker-compose up -d
-
-docker-compose exec fpm php artisan currency:update
+#docker compose build --no-cache
+docker compose build
+docker compose up -d mysql
+sleep 5
+docker compose up -d laravel.test
+docker compose exec laravel.test composer install --optimize-autoloader --ignore-platform-reqs
+./vendor/bin/sail artisan config:clear
+./vendor/bin/sail artisan migrate
+docker compose up -d
+./vendor/bin/sail npm install
+./vendor/bin/sail npm run build
