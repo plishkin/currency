@@ -26,15 +26,16 @@ class CurrencyUpdated implements ShouldBroadcast
         //
     }
 
-    /**
-     * Get the channels the event should broadcast on.
-     *
-     * @return array<int, Channel>
-     */
-    public function broadcastOn(): array
+    public function broadcastOn(): Channel
+    {
+        return new Channel('currency');
+    }
+
+    public function broadcastWith(): array
     {
         return [
-            new Channel('currency'),
+            'currencies' => $this->currency,
+            'lastUpdated' => $this->lastUpdated,
         ];
     }
 }

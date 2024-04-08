@@ -13,4 +13,4 @@ docker compose exec laravel.test composer install --optimize-autoloader --ignore
 ./vendor/bin/sail artisan migrate
 docker compose up -d
 ./vendor/bin/sail npm install
-#./vendor/bin/sail npm run build
+./vendor/bin/sail npm run build

@@ -2,31 +2,34 @@ import './CurrencyLayoutBlock.scss';
 import React, {useState, useEffect} from 'react';
 import Loader from "../Loader/Loader";
 import CurrenciesBlock from "./CurrenciesBlock/CurrenciesBlock";
-import {ICurrency} from "../../Models/ICurrency";
-import {ICurrencyCode} from "../../Models/ICurrencyCode";
 import axios from "axios";
+import {ICurrencyBase, ICurrencyData, ICurrencyJson} from "../../Models/ICurrency";
+import {useBroadcast} from "../../hooks/useBroadcast";
 
-interface CurrencyBlockProps {
+export interface CurrencyBlockProps {
 }
 
-interface ICurrencyJson {
-    currencies: ICurrency[],
-    iso4217?: [],
-    lastUpdated: number,
-}
-
-interface ICurrencyData {
-    iso4217: ICurrencyCode[],
-    currencies: ICurrency[],
-    lastUpdated: number,
-    lastLoaded: number,
-}
+const mapData = (json: ICurrencyJson) => ({
+    iso4217: json.iso4217.map(elem => {
+        return {
+            countryName: elem[0],
+            currencyName: elem[1],
+            codeName: elem[2],
+            code: elem[3],
+            number: elem[4]
+        }
+    }),
+    lastLoaded: Date.now(),
+    lastUpdated: json.lastUpdated,
+    currencies: json.currencies,
+} as ICurrencyData);
 
 const CurrencyLayoutBlock: React.FunctionComponent<CurrencyBlockProps> = (props: CurrencyBlockProps) => {
 
     const [loading, setLoading] = useState<boolean>(false);
     const [currencyData, setCurrencyData] =
         useState<ICurrencyData>({currencies: []} as ICurrencyData);
+    const {listen} = useBroadcast();
 
     const updateFromServer = () => {
         setLoading(true);
@@ -35,36 +38,20 @@ const CurrencyLayoutBlock: React.FunctionComponent<CurrencyBlockProps> = (props:
                 Accept: "application/json"
             },
         }).then(resp => {
-            setCurrencyData(mapData(resp.data as ICurrencyJson));
+            const curData = mapData(resp.data as ICurrencyBase);
+            setCurrencyData(curData);
             setLoading(false);
+            listen(
+                "currency",
+                "CurrencyUpdated",
+                (data: object) => setCurrencyData({...curData, ...data})
+            );
         });
     }
 
     useEffect(() => {
-        if (window.Echo) {
-            window.Echo.connector.listen(
-                'currency',
-                'CurrencyUpdated',
-                (json: ICurrencyJson) => setCurrencyData(mapData(json))
-            )
-        }
         updateFromServer();
     }, []);
-
-    const mapData = (json: ICurrencyJson) => ({
-        iso4217: json.iso4217.map(elem => {
-            return {
-                countryName: elem[0],
-                currencyName: elem[1],
-                codeName: elem[2],
-                code: elem[3],
-                number: elem[4]
-            }
-        }),
-            lastLoaded: Date.now(),
-            lastUpdated: json.lastUpdated,
-            currencies: json.currencies,
-    } as ICurrencyData);
 
     return (
         <div>
