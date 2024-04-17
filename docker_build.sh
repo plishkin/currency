@@ -1,9 +1,5 @@
 #!/usr/bin/env bash
 
-#docker compose down -v
-docker compose stop
-
-#docker compose build --no-cache
 docker compose build
 docker compose up -d mysql
 sleep 5
