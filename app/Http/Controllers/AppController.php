@@ -2,8 +2,8 @@
 
 namespace App\Http\Controllers;
 
-use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Cache;
+
 class AppController extends Controller
 {
     public function index()
@@ -11,7 +11,7 @@ class AppController extends Controller
         return view('app');
     }
 
-    public function currency()
+    public function currency(): string
     {
         $currencies = json_decode(Cache::get('currency'), true);
 

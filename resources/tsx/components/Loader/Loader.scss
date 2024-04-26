@@ -2,16 +2,15 @@
 
 .loader-cont {
   position: absolute;
-  top:0;
+  top: 0;
   left: 0;
   bottom: 0;
   right: 0;
   background-color: white;
-  opacity: .5;
+  opacity: 0.5;
   z-index: 101;
   display: flex;
   align-items: center;
-
 
   .loader:empty,
   .loader:empty:after {

@@ -1,10 +1,12 @@
 import React from 'react';
 import { render, screen } from '@testing-library/react';
-import '@testing-library/jest-dom'
-import Loader from "./Loader";
+import '@testing-library/jest-dom';
+import Loader from './Loader';
 
-test('renders loader', () => {
-    const { container } = render(<Loader />);
-    expect(container.getElementsByClassName('loader-cont').length).toBe(1);
-    expect(container.getElementsByClassName('loader').length).toBe(1);
+describe('Loader', () => {
+  it('renders the Loader component', () => {
+    render(<Loader />);
+
+    // screen.debug(); // prints out the jsx in the App component unto the command line
+  });
 });

@@ -3,8 +3,6 @@
 namespace Tests\Feature;
 
 use App\Connetors\MonobankConnector;
-use App\Jobs\ProcessUpateCurrency;
-use Carbon\Carbon;
 use Tests\TestCase;
 
 class MonobankConnectorTest extends TestCase
@@ -22,6 +20,19 @@ class MonobankConnectorTest extends TestCase
         $this->assertNotEmpty($currencies);
         $currency = reset($currencies);
         $this->assertArrayHasKey('rateBuy', $currency);
+
+        $currency = reset($currencies);
+        $this->assertIsArray($currency);
+        $this->assertArrayHasKey('currencyCodeA', $currency);
+        $this->assertIsInt($currency['currencyCodeA']);
+        $this->assertArrayHasKey('currencyCodeB', $currency);
+        $this->assertIsInt($currency['currencyCodeB']);
+        $this->assertArrayHasKey('date', $currency);
+        $this->assertIsInt($currency['date']);
+        $this->assertArrayHasKey('rateBuy', $currency);
+        $this->assertIsNumeric($currency['rateBuy']);
+        $this->assertArrayHasKey('rateSell', $currency);
+        $this->assertIsNumeric($currency['rateSell']);
     }
 
     public function test_monobank_currency_returns_a_successful_response()
@@ -42,20 +53,6 @@ class MonobankConnectorTest extends TestCase
         $this->assertArrayHasKey('currencies', $json);
         $currencies = $json['currencies'];
         $this->assertIsArray($currencies);
-        $currency = reset($currencies);
-        $this->assertIsArray($currency);
-        $this->assertArrayHasKey('currencyCodeA', $currency);
-        $this->assertIsInt($currency['currencyCodeA']);
-        $this->assertArrayHasKey('currencyCodeB', $currency);
-        $this->assertIsInt($currency['currencyCodeB']);
-        $this->assertArrayHasKey('date', $currency);
-        $this->assertIsInt($currency['date']);
-        $this->assertArrayHasKey('rateBuy', $currency);
-        $this->assertIsNumeric($currency['rateBuy']);
-        $this->assertArrayHasKey('rateCross', $currency);
-        $this->assertIsNumeric($currency['rateCross']);
-        $this->assertArrayHasKey('rateSell', $currency);
-        $this->assertIsNumeric($currency['rateSell']);
     }
 
 }

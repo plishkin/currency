@@ -56,11 +56,11 @@ http://localhost:8082
 #### Backend
 
 ```bash
-docker compose exec fpm php artisan test
+docker compose exec laravel.test php artisan test
 ```
 
 #### Frontend
 
 ```bash
-yarn run test
+docker compose exec laravel.test npm run test
 ```
