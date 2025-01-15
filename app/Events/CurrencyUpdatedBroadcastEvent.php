@@ -4,23 +4,22 @@ namespace App\Events;
 
 use Illuminate\Broadcasting\Channel;
 use Illuminate\Broadcasting\InteractsWithSockets;
-use Illuminate\Broadcasting\PresenceChannel;
-use Illuminate\Broadcasting\PrivateChannel;
 use Illuminate\Contracts\Broadcasting\ShouldBroadcast;
 use Illuminate\Foundation\Events\Dispatchable;
 use Illuminate\Queue\SerializesModels;
 
-class CurrencyUpdated implements ShouldBroadcast
+class CurrencyUpdatedBroadcastEvent implements ShouldBroadcast
 {
     use Dispatchable, InteractsWithSockets, SerializesModels;
 
     /**
-     * @param array $currency
+     * @param array $currencies
      * @param int $lastUpdated
      */
     public function __construct(
-        private array $currency,
-        private int   $lastUpdated,
+        private readonly array $currencies,
+        private readonly int   $lastUpdated,
+        private readonly ?string $error = null,
     )
     {
         //
@@ -28,14 +27,16 @@ class CurrencyUpdated implements ShouldBroadcast
 
     public function broadcastOn(): Channel
     {
-        return new Channel('currency');
+        return new Channel('currencies');
     }
 
     public function broadcastWith(): array
     {
         return [
-            'currencies' => $this->currency,
+            'success' => (bool)$this->error,
+            'currencies' => $this->currencies,
             'lastUpdated' => $this->lastUpdated,
+            'error' => $this->error,
         ];
     }
 }

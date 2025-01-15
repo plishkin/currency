@@ -2,7 +2,7 @@
 <html lang="{{ str_replace('_', '-', app()->getLocale()) }}">
 <head>
     <title>Laravel</title>
-    @vite('resources/tsx/app.tsx')
+    @vite('resources/ts/app.ts')
     @vite('resources/sass/app.scss')
 </head>
 <body class="antialiased">

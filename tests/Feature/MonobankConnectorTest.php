@@ -2,7 +2,7 @@
 
 namespace Tests\Feature;
 
-use App\Connetors\MonobankConnector;
+use App\Connectors\MonobankCurrencyConnector;
 use Tests\TestCase;
 
 class MonobankConnectorTest extends TestCase
@@ -14,7 +14,7 @@ class MonobankConnectorTest extends TestCase
      */
     public function test_monobank_returns_a_successful_response()
     {
-        $currencies = MonobankConnector::getCurrencies();
+        $currencies = MonobankCurrencyConnector::getCurrencies();
 
         $this->assertIsArray($currencies);
         $this->assertNotEmpty($currencies);

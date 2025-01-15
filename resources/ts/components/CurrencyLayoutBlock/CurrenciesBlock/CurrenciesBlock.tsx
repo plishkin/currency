@@ -1,12 +1,10 @@
 import './CurrenciesBlock.scss';
-import React, { useState, useCallback, useEffect } from 'react';
+import React from 'react';
 import CurrencyBlock from './CurrencyBlock/CurrencyBlock';
-import { ICurrency } from '../../../Models/ICurrency';
-import { ICurrencyCode } from '../../../Models/ICurrencyCode';
+import ICurrency from '../../../@types/models/ICurrency';
 
 interface CurrenciesBlockBlockProps {
   currencies: ICurrency[];
-  iso4217: ICurrencyCode[];
 }
 
 const CurrenciesBlock: React.FunctionComponent<CurrenciesBlockBlockProps> = (
@@ -26,12 +24,7 @@ const CurrenciesBlock: React.FunctionComponent<CurrenciesBlockBlockProps> = (
         </thead>
         <tbody>
           {props.currencies.map((currency, idx) => (
-            <CurrencyBlock
-              currency={currency}
-              iso4217={props.iso4217}
-              idx={idx}
-              key={idx}
-            />
+            <CurrencyBlock currency={currency} idx={idx} key={idx} />
           ))}
         </tbody>
       </table>

@@ -2,10 +2,11 @@
 
 namespace App\Console\Commands;
 
-use App\Jobs\ProcessUpateCurrency;
+use App\Jobs\UpdateMonobankCurrencyJob;
+use App\Models\Currency;
 use Illuminate\Console\Command;
 
-class UpdateCurrency extends Command
+class UpdateCurrencyCommand extends Command
 {
     /**
      * The name and signature of the console command.
@@ -21,11 +22,8 @@ class UpdateCurrency extends Command
      */
     protected $description = 'Command description';
 
-    /**
-     * Execute the console command.
-     */
-    public function handle()
+    public function handle(): void
     {
-        ProcessUpateCurrency::dispatch();
+        UpdateMonobankCurrencyJob::dispatch();
     }
 }

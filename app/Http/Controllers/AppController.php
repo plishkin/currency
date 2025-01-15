@@ -2,7 +2,7 @@
 
 namespace App\Http\Controllers;
 
-use Illuminate\Support\Facades\Cache;
+use App\Services\MonobankCurrencyService;
 
 class AppController extends Controller
 {
@@ -11,14 +11,15 @@ class AppController extends Controller
         return view('app');
     }
 
-    public function currency(): string
+    public function currency(MonobankCurrencyService $monobankCurrencyService): string
     {
-        $currencies = json_decode(Cache::get('currency'), true);
+        $currencies = $monobankCurrencyService->getCachedMonobankCurrenciesAsArray();
+        $lastUpdated = $monobankCurrencyService->getCachedMonobankLastUpdated();
 
         return json_encode([
+            'success' => (bool)$currencies,
             'currencies' => $currencies ?: [],
-            'iso4217' => config('iso4217'),
-            'lastUpdated' => Cache::get('lastUpdated'),
+            'lastUpdated' => $lastUpdated,
         ]);
     }
 }
