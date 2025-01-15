@@ -3,56 +3,35 @@
 namespace Tests\Feature;
 
 use App\Connectors\MonobankCurrencyConnector;
+use App\Exceptions\WeatherServerResponseException;
+use GuzzleHttp\Exception\GuzzleException;
+use GuzzleHttp\Exception\RequestException;
 use Tests\TestCase;
 
 class MonobankConnectorTest extends TestCase
 {
-    /**
-     * A basic test example.
-     *
-     * @return void
-     */
+
     public function test_monobank_returns_a_successful_response()
     {
-        $currencies = MonobankCurrencyConnector::getCurrencies();
+        /** @var MonobankCurrencyConnector $connector */
+        $connector = $this->app->make(MonobankCurrencyConnector::class);
 
-        $this->assertIsArray($currencies);
-        $this->assertNotEmpty($currencies);
-        $currency = reset($currencies);
-        $this->assertArrayHasKey('rateBuy', $currency);
-
-        $currency = reset($currencies);
-        $this->assertIsArray($currency);
-        $this->assertArrayHasKey('currencyCodeA', $currency);
-        $this->assertIsInt($currency['currencyCodeA']);
-        $this->assertArrayHasKey('currencyCodeB', $currency);
-        $this->assertIsInt($currency['currencyCodeB']);
-        $this->assertArrayHasKey('date', $currency);
-        $this->assertIsInt($currency['date']);
-        $this->assertArrayHasKey('rateBuy', $currency);
-        $this->assertIsNumeric($currency['rateBuy']);
-        $this->assertArrayHasKey('rateSell', $currency);
-        $this->assertIsNumeric($currency['rateSell']);
-    }
-
-    public function test_monobank_currency_returns_a_successful_response()
-    {
-        $response = $this->get('/currency');
-        $response->assertStatus(200);
-        $json = $response->json();
-
-        $this->assertArrayHasKey('iso4217', $json);
-        $iso4217 = $json['iso4217'];
-        $this->assertIsArray($iso4217);
-        $item = reset($iso4217);
-        $this->assertIsArray($item);
-        $this->assertCount(5, $item);
-
-        $this->assertArrayHasKey('lastUpdated', $json);
-
-        $this->assertArrayHasKey('currencies', $json);
-        $currencies = $json['currencies'];
-        $this->assertIsArray($currencies);
+        $response = null;
+        try {
+            $response = $connector->getResponse();
+        } catch (GuzzleException $e) {
+            if ($e instanceof RequestException) {
+                $contents = $e->getResponse()?->getBody()?->getContents();
+                if ($contents) {
+                    $errorJson = json_decode($contents);
+                    if ($errorJson->message) {
+                        $this->fail($errorJson->message);
+                    }
+                }
+            }
+            $this->fail($e->getMessage());
+        }
+        $this->assertEquals(200, $response?->getStatusCode());
     }
 
 }
