@@ -2,6 +2,7 @@
 
 namespace App\Console\Commands;
 
+use App\Events\CurrencyUpdatedBroadcastEvent;
 use App\Jobs\UpdateMonobankCurrencyJob;
 use App\Models\Currency;
 use Illuminate\Console\Command;

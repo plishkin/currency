@@ -33,7 +33,7 @@ class CurrencyUpdatedBroadcastEvent implements ShouldBroadcast
     public function broadcastWith(): array
     {
         return [
-            'success' => (bool)$this->error,
+            'success' => !$this->error,
             'currencies' => $this->currencies,
             'lastUpdated' => $this->lastUpdated,
             'error' => $this->error,

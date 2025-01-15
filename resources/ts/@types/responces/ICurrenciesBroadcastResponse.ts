@@ -1,8 +1,4 @@
-import IResponse from './IResponse';
-import ICurrency from '../models/ICurrency';
+import { ICurrenciesResponse } from './ICurrenciesResponse';
 
-export default interface ICurrenciesBroadcastResponse extends IResponse {
-  currencies: ICurrency[];
-  lastUpdated: number;
-  error: string;
-}
+export default interface ICurrenciesBroadcastResponse
+  extends ICurrenciesResponse {}

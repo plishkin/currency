@@ -4,11 +4,22 @@ import Loader from '../Loader/Loader';
 import CurrenciesBlock from './CurrenciesBlock/CurrenciesBlock';
 import { useBroadcast } from '../../hooks/useBroadcast';
 import ICurrency from '../../@types/models/ICurrency';
-import { getCurrenciesFromServer, TTarget } from '../../api/api';
+import {
+  getCurrenciesFromServer,
+  TTarget,
+  updateCurrenciesFromApi
+} from '../../api/api';
 import ICurrenciesBroadcastResponse from '../../@types/responces/ICurrenciesBroadcastResponse';
 import Alert, { IAlert } from '../Alert/Alert';
-import { failAlert } from '../_utils/alerts';
+import {
+  errorAlert,
+  errorWhileUpdatingAlert,
+  failAlert,
+  infoAlert,
+  successfullyUpdatedAlert
+} from '../_utils/alerts';
 import IFailResponse from '../../@types/responces/IFailResponse';
+import { ICurrenciesResponse } from '../../@types/responces/ICurrenciesResponse';
 
 export interface CurrencyBlockProps {}
 
@@ -17,37 +28,56 @@ const CurrencyLayoutBlock: React.FunctionComponent<CurrencyBlockProps> = (
 ) => {
   const [loading, setLoading] = useState<boolean>(false);
   const [currencies, setCurrencies] = useState<ICurrency[]>([]);
-  const [alert, setAlert] = useState<IAlert | null>(null);
-  const [lastLoaded, setLastLoaded] = useState<number | null>(null);
+  const [alerts, setAlerts] = useState<IAlert[] | []>([]);
+  const [lastLoaded, setLastLoaded] = useState<Date>(new Date());
   const [lastUpdated, setLastUpdated] = useState<number | null>(null);
   const { listen } = useBroadcast();
 
-  const updateFromServer = (target: TTarget) => {
+  const handleUpdate = (resp: ICurrenciesResponse) => {
+    setCurrencies(resp.currencies || []);
+    setLastUpdated(resp.lastUpdated || null);
+    const ll = new Date();
+    setLastLoaded(ll);
+    const als = [...alerts];
+    if (resp.success) als.push(successfullyUpdatedAlert(ll));
+    else als.push(errorWhileUpdatingAlert(ll));
+    if (resp.error) als.push(errorAlert(resp.error));
+    if (resp.message) als.push(infoAlert(resp.message));
+    setAlerts(als);
+  };
+
+  const updateFromServer = () => {
     setLoading(true);
-    getCurrenciesFromServer(target)
-      .then(resp => {
-        setCurrencies(resp.currencies || []);
-        setLastUpdated(resp.lastUpdated || null);
-        if (resp.error)
-          setAlert({
-            text: resp.error,
-            dismissible: true,
-            type: 'danger'
-          });
-      })
+    getCurrenciesFromServer()
+      .then(resp => handleUpdate(resp))
       .catch(e => {
-        setAlert(failAlert(e.response.data as IFailResponse));
+        setAlerts([...alerts, failAlert(e.response.data as IFailResponse)]);
       })
       .finally(() => setLoading(false));
   };
 
+  const updateFromAPI = () => {
+    setLoading(true);
+    updateCurrenciesFromApi()
+      .then(resp => {
+        setAlerts([...alerts, infoAlert(resp.message)]);
+      })
+      .catch(e => {
+        setAlerts([...alerts, failAlert(e.response.data as IFailResponse)]);
+      });
+  };
+
   useEffect(() => {
-    updateFromServer('cache');
+    updateFromServer();
 
     listen(
       'currencies',
       'CurrencyUpdatedBroadcastEvent',
-      (data: ICurrenciesBroadcastResponse) => setCurrencies(data.currencies)
+      (resp: ICurrenciesBroadcastResponse) => {
+        setAlerts([]);
+        handleUpdate(resp);
+        setLoading(false);
+      }
     );
   }, []);
 
@@ -55,12 +85,9 @@ const CurrencyLayoutBlock: React.FunctionComponent<CurrencyBlockProps> = (
     <div>
       <h2>Monobank currencies</h2>
       <hr />
-      {alert && (
-        <>
-          <Alert {...alert} />
-          <hr />
-        </>
-      )}
+      {alerts.map((alert, idx) => (
+        <Alert key={`${alert.text} - ${lastLoaded} - ${idx}`} {...alert} />
+      ))}
       {loading && (
         <div className="currency-loader">
           <Loader height="100%" />
@@ -73,14 +100,14 @@ const CurrencyLayoutBlock: React.FunctionComponent<CurrencyBlockProps> = (
               <p>
                 <strong>Last loaded at: </strong>
                 <br />
-                {new Date(lastLoaded).toLocaleString()}
+                {lastLoaded.toLocaleString()}
               </p>
             </div>
             <div className="col-md-4">
               <p>
                 <span
                   className="btn btn-lg btn-success"
-                  onClick={() => updateFromServer('cache')}
+                  onClick={() => updateFromServer()}
                 >
                   Update From Server Cache
                 </span>
@@ -98,7 +125,7 @@ const CurrencyLayoutBlock: React.FunctionComponent<CurrencyBlockProps> = (
               <p>
                 <span
                   className="btn btn-lg btn-success"
-                  onClick={() => updateFromServer('api')}
+                  onClick={() => updateFromAPI()}
                 >
                   Update From Monobank API
                 </span>

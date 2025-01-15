@@ -1,16 +1,29 @@
 import axios from 'axios';
 import { ICurrenciesResponse } from '../@types/responces/ICurrenciesResponse';
+import IResponse from '../@types/responces/IResponse';
 
 export type TTarget = 'cache' | 'api';
 
-export const getCurrenciesFromServer = async (target: TTarget) => {
+export const getCurrenciesFromServer = async () => {
   return axios
-    .get(target === 'api' ? '/currency/api' : '/currency/cached', {
+    .get('/currency/cached', {
       headers: {
         Accept: 'application/json'
       }
     })
     .then(response => {
       return response.data as ICurrenciesResponse;
+    });
+};
+
+export const updateCurrenciesFromApi = async () => {
+  return axios
+    .get('/currency/api', {
+      headers: {
+        Accept: 'application/json'
+      }
+    })
+    .then(response => {
+      return response.data as IResponse;
     });
 };
